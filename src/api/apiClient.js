@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = 'https://her-2-her.onrender.com/api';
 
 console.log('API Client initialized with BASE_URL:', API_BASE_URL);
 
