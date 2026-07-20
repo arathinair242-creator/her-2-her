@@ -1,0 +1,20 @@
+[
+  {
+    "name": "_mongodb._tcp.cluster0.swi9txf.mongodb.net",
+    "type": 33,
+    "TTL": 60,
+    "data": "0 0 27017 ac-sacmkyi-shard-00-00.swi9txf.mongodb.net"
+  },
+  {
+    "name": "_mongodb._tcp.cluster0.swi9txf.mongodb.net",
+    "type": 33,
+    "TTL": 60,
+    "data": "0 0 27017 ac-sacmkyi-shard-00-01.swi9txf.mongodb.net"
+  },
+  {
+    "name": "_mongodb._tcp.cluster0.swi9txf.mongodb.net",
+    "type": 33,
+    "TTL": 60,
+    "data": "0 0 27017 ac-sacmkyi-shard-00-02.swi9txf.mongodb.net"
+  }
+]

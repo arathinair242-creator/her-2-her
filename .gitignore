@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Environment variables — NEVER push (contains DB passwords & API secrets)
+.env
+server/.env
+*.env
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+server/server.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp / test files
+server/test_*.js
+server/dns_test*.js
+server/probe*.js
+server/gen-curl.js
+server/check_db.js
+server/shard_lookup_test.js
+server/test_output.txt
