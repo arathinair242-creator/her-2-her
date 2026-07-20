@@ -60,6 +60,10 @@ app.get('/', (req, res) => {
   res.send('Her-2-Her Backend API is running...');
 });
 
+app.get('/api', (req, res) => {
+  res.json({ status: 'healthy', message: 'Her-2-Her Backend API is running...' });
+});
+
 const http = require('http');
 const { Server } = require('socket.io');
 
