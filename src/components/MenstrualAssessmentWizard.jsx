@@ -154,7 +154,7 @@ export default function MenstrualAssessmentWizard({ onClose, onComplete }) {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-card glass-card" style={{ maxWidth: '540px', padding: '30px', borderRadius: '28px', minHeight: '540px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <div className="modal-card glass-card menstrual-wizard-card" style={{ maxWidth: '540px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
         
         {step !== 6 && (
           <button className="modal-close-btn" onClick={onClose} style={{ zIndex: 10 }}>

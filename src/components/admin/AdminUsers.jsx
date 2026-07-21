@@ -55,7 +55,7 @@ export default function AdminUsers() {
           <Activity className="animate-pulse-soft" color="#7c3aed" size={40} />
         </div>
       ) : (
-        <div className="glass-card" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+        <div className="glass-card admin-table-container">
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead style={{ backgroundColor: 'rgba(0,0,0,0.02)', borderBottom: '1px solid var(--border-color)' }}>
               <tr>

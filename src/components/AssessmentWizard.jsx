@@ -159,7 +159,7 @@ export default function AssessmentWizard({ onClose, onComplete }) {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-card glass-card" style={{ maxWidth: '540px', padding: '30px', borderRadius: '28px', minHeight: '540px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
+      <div className="modal-card glass-card menstrual-wizard-card" style={{ maxWidth: '540px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
         
         {/* Confetti particles overlay on success */}
         {step === 12 && renderConfetti()}

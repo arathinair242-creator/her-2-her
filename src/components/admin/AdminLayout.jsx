@@ -14,22 +14,18 @@ export default function AdminLayout({ activeChildTab, setActiveChildTab, onLogou
   ];
 
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#f9f9fc', fontFamily: 'inherit' }}>
+    <div className="admin-main-container">
       
       {/* Sidebar Navigation */}
-      <div style={{ 
-        width: '260px', minWidth: '260px', backgroundColor: '#ffffff', 
-        borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column',
-        boxShadow: '2px 0 10px rgba(0,0,0,0.02)'
-      }}>
-        <div style={{ padding: '30px 24px', display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid var(--border-color)' }}>
+      <div className="admin-sidebar">
+        <div className="admin-sidebar-logo" style={{ padding: '30px 24px', display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid var(--border-color)' }}>
           <div style={{ backgroundColor: '#7c3aed', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
             H
           </div>
           <span style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1f2937' }}>Admin Panel</span>
         </div>
-
-        <div style={{ flex: 1, padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+ 
+        <div className="admin-sidebar-menu" style={{ flex: 1, padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeChildTab === tab.id;
@@ -51,8 +47,8 @@ export default function AdminLayout({ activeChildTab, setActiveChildTab, onLogou
             )
           })}
         </div>
-
-        <div style={{ padding: '24px 16px', borderTop: '1px solid var(--border-color)' }}>
+ 
+        <div className="admin-sidebar-logout-container" style={{ padding: '24px 16px', borderTop: '1px solid var(--border-color)' }}>
           <button 
             onClick={onLogout}
             style={{ 
@@ -66,14 +62,14 @@ export default function AdminLayout({ activeChildTab, setActiveChildTab, onLogou
           </button>
         </div>
       </div>
-
+ 
       {/* Main Content Area */}
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'auto', minWidth: 0, padding: '20px', backgroundColor: '#f9f9fc' }}>
+      <div className="admin-content-area">
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           {children}
         </div>
       </div>
-
+ 
     </div>
   );
 }

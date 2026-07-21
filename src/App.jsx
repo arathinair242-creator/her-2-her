@@ -33,6 +33,7 @@ import './components/Pages.css';
 function App() {
   // Navigation active tab
   const [activeTab, setActiveTab] = useState('Home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Modals visibility states
   const [showAssessment, setShowAssessment] = useState(false);
@@ -522,12 +523,152 @@ function App() {
               )}
             </div>
             
-            <button className="mobile-menu-btn" onClick={() => setShowProfileDropdown(!showProfileDropdown)} style={{ display: 'none' }}>
+            <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(true)}>
               <Menu size={24} />
             </button>
           </div>
         </div>
       </header>
+
+      {/* MOBILE DRAWER MENU */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-menu-drawer glass-card" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu-header">
+              <div className="logo-section">
+                <img src={logoImg} alt="Her-2-Her Logo" style={{ height: '44px', objectFit: 'contain' }} />
+              </div>
+              <button className="mobile-menu-close" onClick={() => setMobileMenuOpen(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            {isLoggedIn && (
+              <div className="mobile-menu-profile" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
+                <div className="mobile-avatar" style={{ width: '44px', height: '44px', borderRadius: '12px', overflow: 'hidden', background: 'var(--primary-pink-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {userProfile?.profilePicture ? (
+                    <img src={userProfile.profilePicture} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <User size={22} color="var(--primary-pink)" />
+                  )}
+                </div>
+                <div className="mobile-profile-info" style={{ overflow: 'hidden' }}>
+                  <p className="mobile-username" style={{ margin: 0, fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-dark)' }}>{localStorage.getItem('her2her_user_name') || 'Member'}</p>
+                  <p className="mobile-email" style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-gray)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{localStorage.getItem('her2her_user_email')}</p>
+                </div>
+              </div>
+            )}
+
+            <nav className="mobile-nav-links" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
+              {['Home', 'Consult', 'Plans', 'Community', 'About Us'].map((tab) => (
+                <a
+                  key={tab}
+                  href={`#${tab.toLowerCase().replace(' ', '-')}`}
+                  className={`mobile-nav-link-item ${activeTab === tab ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveTab(tab);
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    color: activeTab === tab ? 'var(--primary-pink)' : 'var(--text-dark)',
+                    background: activeTab === tab ? 'rgba(255, 75, 139, 0.08)' : 'transparent',
+                    display: 'block',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {tab}
+                </a>
+              ))}
+              {isLoggedIn && (
+                <a
+                  href="#dashboard"
+                  className={`mobile-nav-link-item ${activeTab === 'Dashboard' ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveTab('Dashboard');
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    color: activeTab === 'Dashboard' ? 'var(--primary-pink)' : 'var(--text-dark)',
+                    background: activeTab === 'Dashboard' ? 'rgba(255, 75, 139, 0.08)' : 'transparent',
+                    display: 'block',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {localStorage.getItem('her2her_role')?.toLowerCase() === 'expert' ? 'Expert Dashboard' : localStorage.getItem('her2her_role')?.toLowerCase() === 'partner' ? 'Partner Dashboard' : 'My Dashboard'}
+                </a>
+              )}
+              {!userEmail && (
+                <a
+                  href="#partners"
+                  className="mobile-nav-link-item partners-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPartnerLoginModal(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                    color: 'var(--primary-pink)',
+                    display: 'block',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  For Partners
+                </a>
+              )}
+            </nav>
+
+            <div className="mobile-menu-actions" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
+              <button 
+                className="btn-ghost mobile-expert-btn" 
+                onClick={() => { setActiveTab('Expert Portal'); setMobileMenuOpen(false); }}
+                style={{ width: '100%', padding: '12px', borderRadius: '99px', fontSize: '0.95rem' }}
+              >
+                Login as Expert
+              </button>
+              {isLoggedIn ? (
+                <>
+                  <button 
+                    className="btn-ghost mobile-profile-btn" 
+                    onClick={() => { setActiveTab('Profile'); setMobileMenuOpen(false); }}
+                    style={{ width: '100%', padding: '12px', borderRadius: '99px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  >
+                    <User size={16} /> Profile Settings
+                  </button>
+                  <button 
+                    className="btn-secondary mobile-logout-btn" 
+                    onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                    style={{ width: '100%', padding: '12px', borderRadius: '99px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--red-accent)', borderColor: 'rgba(244,63,94,0.2)' }}
+                  >
+                    <LogOut size={16} /> Logout
+                  </button>
+                </>
+              ) : (
+                <button 
+                  className="btn-primary mobile-login-btn" 
+                  onClick={() => { setShowUserLoginModal(true); setMobileMenuOpen(false); }}
+                  style={{ width: '100%', padding: '12px', borderRadius: '99px', fontSize: '0.95rem' }}
+                >
+                  Login
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MAIN BODY PAGES RENDERING */}
       {activeTab === 'Home' && (
@@ -1155,7 +1296,7 @@ function App() {
                 </div>
 
                 {/* Name */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="feedback-form-row">
                   <div>
                     <label style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-dark)', display: 'block', marginBottom: '6px' }}>Name *</label>
                     <input
