@@ -7,6 +7,7 @@ import './Pages.css';
 export default function ExpertDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showVideoCall, setShowVideoCall] = useState(false);
   const [activeUser, setActiveUser] = useState(null);
   const [activeAppointmentId, setActiveAppointmentId] = useState(null);
@@ -16,11 +17,13 @@ export default function ExpertDashboard() {
   }, []);
 
   const fetchAppointments = async () => {
+    setError(null);
     try {
       const data = await consultApi.getExpertSessions();
-      setAppointments(data);
+      setAppointments(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error fetching expert appointments:", err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -48,6 +51,13 @@ export default function ExpertDashboard() {
 
       {loading ? (
         <p>Loading appointments...</p>
+      ) : error ? (
+        <div className="glass-card" style={{ padding: '40px', textAlign: 'center' }}>
+          <AlertCircle size={48} style={{ color: '#f43f5e', opacity: 0.7, marginBottom: '16px' }} />
+          <h3>Could not load appointments</h3>
+          <p style={{ color: 'var(--text-gray)' }}>{error}</p>
+          <button className="btn-secondary" style={{ marginTop: '16px' }} onClick={fetchAppointments}>Retry</button>
+        </div>
       ) : appointments.length === 0 ? (
         <div className="glass-card" style={{ padding: '40px', textAlign: 'center' }}>
           <AlertCircle size={48} style={{ color: 'var(--secondary-violet)', opacity: 0.5, marginBottom: '16px' }} />
@@ -86,7 +96,7 @@ export default function ExpertDashboard() {
                     <button className="btn-primary" onClick={() => handleStatusUpdate(app._id, 'Confirmed')} style={{ backgroundColor: 'var(--teal-accent)', padding: '8px 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <CheckCircle size={16} /> Accept
                     </button>
-                    <button onClick={() => handleStatusUpdate(app._id, 'Rejected')} style={{ border: 'none', background: 'rgba(244, 63, 94, 0.1)', color: '#f43f5e', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
+                    <button onClick={() => handleStatusUpdate(app._id, 'Cancelled')} style={{ border: 'none', background: 'rgba(244, 63, 94, 0.1)', color: '#f43f5e', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
                       <XCircle size={16} /> Reject
                     </button>
                   </>

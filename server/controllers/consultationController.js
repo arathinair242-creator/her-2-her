@@ -47,11 +47,14 @@ exports.getMyConsultations = async (req, res) => {
 
 exports.getExpertConsultations = async (req, res) => {
   try {
+    console.log('[EXPERT SESSIONS] Fetching consultations for expert ID:', req.user.id);
     const consultations = await Consultation.find({ expert: req.user.id })
       .populate('user', 'name email age profilePicture')
       .sort({ date: 1, time: 1 });
+    console.log(`[EXPERT SESSIONS] Found ${consultations.length} consultations for expert: ${req.user.id}`);
     res.json(consultations);
   } catch (err) {
+    console.error('[EXPERT SESSIONS] Error:', err.message);
     res.status(500).json({ message: err.message });
   }
 };
