@@ -77,13 +77,14 @@ export default function ConsultPage({ setChatOpen }) {
       }
 
       // Step 2: Open payment checkout with consultation details
+      const sessionFee = Number(bookingExpert.charges?.video) || Number(bookingExpert.consultationFee) || 500;
       setCheckoutDetails({
         expertName: bookingExpert.name,
         expertId: bookingExpert._id || bookingExpert.id,
         consultationId: consultationId,
         date: bookingDate,
         time: bookingTime,
-        amount: bookingExpert.consultationFee || 500,
+        amount: sessionFee,
         userName: localStorage.getItem('her2her_user_name') || '',
         userEmail: localStorage.getItem('her2her_user_email') || '',
       });
@@ -249,7 +250,7 @@ export default function ConsultPage({ setChatOpen }) {
               <>
                 <h3 className="modal-title">Book Session with {bookingExpert.name}</h3>
                 <p style={{ color: 'var(--text-gray)', fontSize: '0.9rem', marginBottom: '20px' }}>
-                  Choose a date and time slot for your 30-minute virtual consultation.
+                  Choose a date and time slot for your 30-minute virtual consultation (Fee: ₹{Number(bookingExpert.charges?.video) || Number(bookingExpert.consultationFee) || 500}).
                 </p>
 
                 <form onSubmit={handleBooking}>
@@ -283,7 +284,7 @@ export default function ConsultPage({ setChatOpen }) {
                   <div className="modal-actions">
                     <button type="button" className="btn-modal-cancel" onClick={closeBooking} disabled={bookingLoading}>Cancel</button>
                     <button type="submit" className="btn-modal-submit" disabled={bookingLoading}>
-                      {bookingLoading ? 'Processing...' : 'Proceed to Payment'}
+                      {bookingLoading ? 'Processing...' : `Proceed to Payment (₹${Number(bookingExpert.charges?.video) || Number(bookingExpert.consultationFee) || 500})`}
                     </button>
                   </div>
                 </form>
