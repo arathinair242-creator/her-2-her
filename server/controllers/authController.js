@@ -122,23 +122,35 @@ exports.loginExpert = async (req, res) => {
 
 exports.googleAuth = async (req, res) => {
   try {
-    const { email, name, googleId } = req.body;
-    console.log(`Google Auth attempt: ${email}`);
-    let user = await User.findOne({ email });
+    const { email, name, googleId, role } = req.body;
+    console.log(`Google Auth attempt: ${email}, role: ${role}`);
 
+    // If logging in as expert, look up Expert collection
+    if (role === 'expert') {
+      const expert = await Expert.findOne({ email });
+      if (!expert) {
+        return res.status(404).json({ message: 'No expert account found with this Google email. Please register first using the form.' });
+      }
+      console.log(`Google Auth expert found: ${email}, _id: ${expert._id}`);
+      return res.json({
+        token: generateToken(expert._id, 'expert'),
+        expert: { id: expert._id, name: expert.name, email: expert.email, status: expert.status }
+      });
+    }
+
+    // Default: User flow
+    let user = await User.findOne({ email });
     if (!user) {
-      // Create new user if they don't exist
       user = new User({
         name: name || email.split('@')[0],
         email,
-        password: Math.random().toString(36).slice(-10), // Random placeholder password
+        password: Math.random().toString(36).slice(-10),
         isGoogleAccount: true,
         googleId
       });
       await user.save();
       console.log(`New Google user created: ${email}`);
     } else {
-      // Update existing user to be a Google account if they aren't already
       if (!user.isGoogleAccount) {
         user.isGoogleAccount = true;
         user.googleId = googleId;

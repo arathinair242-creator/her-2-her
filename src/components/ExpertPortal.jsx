@@ -235,16 +235,28 @@ export default function ExpertPortal() {
       });
 
       if (data && data.token) {
+        localStorage.removeItem('her2her_token');
+        localStorage.removeItem('her2her_role');
+        localStorage.removeItem('her2her_is_logged_in');
         localStorage.setItem('her2her_token', data.token);
         localStorage.setItem('her2her_role', 'expert');
         localStorage.setItem('her2her_is_logged_in', 'true');
         setIsLoggedExpert(true);
-        setSuccessMsg('Successfully logged into your partner dashboard!');
-        setTimeout(() => window.location.reload(), 1500);
+        setSuccessMsg('Successfully logged into your expert dashboard!');
+        // Navigate to Expert Dashboard tab instead of reloading home
+        setTimeout(() => {
+          window.location.hash = '#expert-dashboard';
+          window.location.reload();
+        }, 1000);
       }
     } catch (err) {
       console.error('Google Auth error:', err);
-      alert('Google Auth failed: ' + (err.message || 'Unknown error'));
+      const msg = err.message || 'Unknown error';
+      if (msg.includes('No expert account found')) {
+        alert('No expert account found with this Google email. Please register first using the form above.');
+      } else {
+        alert('Google login failed: ' + msg);
+      }
     }
   };
 
