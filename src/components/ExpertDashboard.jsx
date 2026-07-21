@@ -20,7 +20,8 @@ export default function ExpertDashboard() {
     setError(null);
     try {
       const data = await consultApi.getExpertSessions();
-      setAppointments(Array.isArray(data) ? data : []);
+      const valid = Array.isArray(data) ? data.filter(c => c.user) : [];
+      setAppointments(valid);
     } catch (err) {
       console.error("Error fetching expert appointments:", err);
       setError(err.message);
@@ -70,15 +71,15 @@ export default function ExpertDashboard() {
             <div key={app._id} className="glass-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                 <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'rgba(5, 205, 153, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {app.user.profilePicture ? (
-                    <img src={app.user.profilePicture} alt={app.user.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  {app.user?.profilePicture ? (
+                    <img src={app.user.profilePicture} alt={app.user?.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
                   ) : (
                     <User size={24} style={{ color: 'var(--teal-accent)' }} />
                   )}
                 </div>
                 <div>
-                  <h4 style={{ margin: 0, fontWeight: 700 }}>{app.user.name}</h4>
-                  <p style={{ margin: '4px 0', fontSize: '0.85rem', color: 'var(--text-gray)' }}>User Email: {app.user.email}</p>
+                  <h4 style={{ margin: 0, fontWeight: 700 }}>{app.user?.name || 'Unknown Patient'}</h4>
+                  <p style={{ margin: '4px 0', fontSize: '0.85rem', color: 'var(--text-gray)' }}>User Email: {app.user?.email || 'N/A'}</p>
                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                     <span style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <Calendar size={14} /> {new Date(app.date).toLocaleDateString()}
