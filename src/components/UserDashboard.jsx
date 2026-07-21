@@ -19,7 +19,10 @@ export default function UserDashboard({ setActiveTab }) {
   const [startingTrial, setStartingTrial] = useState(false);
   
   // Period Tracker States
-  const [lastPeriod, setLastPeriod] = useState(() => localStorage.getItem('her2her_last_period') || '');
+  const [lastPeriod, setLastPeriod] = useState(() => {
+    const val = localStorage.getItem('her2her_last_period');
+    return (val && val !== 'null' && val !== 'undefined') ? val : '';
+  });
   const [cycleLength, setCycleLength] = useState(28);
   const [nextPeriod, setNextPeriod] = useState(null);
   const [activeDashboardTab, setActiveDashboardTab] = useState('overview'); // overview, payments, profile
@@ -105,11 +108,17 @@ export default function UserDashboard({ setActiveTab }) {
   }, []);
 
   useEffect(() => {
-    if (lastPeriod) {
+    if (lastPeriod && lastPeriod !== 'null' && lastPeriod !== 'undefined') {
       const date = new Date(lastPeriod);
-      date.setDate(date.getDate() + cycleLength);
-      setNextPeriod(date);
-      localStorage.setItem('her2her_last_period', lastPeriod);
+      if (!isNaN(date.getTime())) {
+        date.setDate(date.getDate() + cycleLength);
+        setNextPeriod(date);
+        localStorage.setItem('her2her_last_period', lastPeriod);
+      } else {
+        setNextPeriod(null);
+      }
+    } else {
+      setNextPeriod(null);
     }
   }, [lastPeriod, cycleLength]);
 
@@ -301,7 +310,7 @@ export default function UserDashboard({ setActiveTab }) {
                   />
                 </div>
 
-                {nextPeriod && (
+                {nextPeriod && !isNaN(nextPeriod.getTime()) && (
                   <div className="highlight-item" style={{ background: 'var(--primary-pink-light)', padding: '15px', borderRadius: '15px', textAlign: 'center' }}>
                     <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--primary-pink)', fontWeight: 600 }}>PREDICTED NEXT PERIOD</p>
                     <p style={{ margin: '5px 0 0', fontSize: '1.1rem', fontWeight: 700 }}>{nextPeriod.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
@@ -372,7 +381,7 @@ export default function UserDashboard({ setActiveTab }) {
                             {history.type} Assessment
                           </div>
                           <div style={{ fontSize: '0.75rem', color: 'var(--text-gray)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <Calendar size={12} /> {new Date(history.createdAt).toLocaleDateString()}
+                            <Calendar size={12} /> {history.createdAt && !isNaN(new Date(history.createdAt).getTime()) ? new Date(history.createdAt).toLocaleDateString() : 'N/A'}
                           </div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
@@ -425,17 +434,17 @@ export default function UserDashboard({ setActiveTab }) {
                       }}>
                         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                           <div style={{ width: '50px', height: '50px', borderRadius: '14px', backgroundColor: 'var(--primary-pink-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {app.expert.profilePicture ? (
-                              <img src={app.expert.profilePicture} alt={app.expert.name} style={{ width: '100%', height: '100%', borderRadius: '14px', objectFit: 'cover' }} />
+                            {app.expert?.profilePicture ? (
+                              <img src={app.expert.profilePicture} alt={app.expert.name || 'Expert'} style={{ width: '100%', height: '100%', borderRadius: '14px', objectFit: 'cover' }} />
                             ) : (
                               <Star size={20} style={{ color: 'var(--primary-pink)' }} />
                             )}
                           </div>
                           <div>
-                            <h4 style={{ margin: 0, fontWeight: 700, fontSize: '1rem' }}>{app.expert.name}</h4>
+                            <h4 style={{ margin: 0, fontWeight: 700, fontSize: '1rem' }}>{app.expert?.name || 'Expert'}</h4>
                             <div style={{ display: 'flex', gap: '10px', marginTop: '4px', alignItems: 'center' }}>
                               <span style={{ fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--text-gray)' }}>
-                                <Calendar size={12} /> {new Date(app.date).toLocaleDateString()}
+                                <Calendar size={12} /> {app.date && !isNaN(new Date(app.date).getTime()) ? new Date(app.date).toLocaleDateString() : 'N/A'}
                               </span>
                               <span style={{ fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--text-gray)' }}>
                                 <Clock size={12} /> {app.time}
