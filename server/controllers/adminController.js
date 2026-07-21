@@ -34,7 +34,7 @@ exports.getDashboardStats = async (req, res) => {
       User.countDocuments({}),
       Expert.countDocuments({}),
       Expert.countDocuments({ status: { $regex: /pending/i } }),
-      Expert.countDocuments({ status: { $regex: /approved/i } }),
+      Expert.countDocuments({ status: { $regex: /^(approved|verified)$/i } }),
       Partner.countDocuments({}),
       Order.countDocuments({}),
       Order.countDocuments({ status: { $in: ['Pending', 'Confirmed'] } })
@@ -123,11 +123,12 @@ exports.updateDoctorStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
     
-    if (!['Approved', 'Rejected', 'Pending', 'pending', 'approved', 'rejected'].includes(status)) {
+    if (!['Approved', 'Rejected', 'Pending', 'pending', 'approved', 'rejected', 'Verified', 'verified'].includes(status)) {
        return res.status(400).json({ message: 'Invalid status' });
     }
 
-    const doctor = await Expert.findByIdAndUpdate(id, { status }, { new: true });
+    const canonicalStatus = (status.toLowerCase() === 'approved' || status.toLowerCase() === 'verified') ? 'Verified' : status;
+    const doctor = await Expert.findByIdAndUpdate(id, { status: canonicalStatus }, { new: true });
     if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
     
     res.status(200).json({ message: "Doctor successfully " + status, doctor });

@@ -26,9 +26,12 @@ export default function AdminDoctors() {
 
   const handleUpdateStatus = async (id, status) => {
     try {
-      await adminApi.updateDoctorStatus(id, status);
-      // Optimistically update
-      setDoctors(doctors.map(d => d._id === id ? { ...d, status: status.toLowerCase() } : d));
+      const response = await adminApi.updateDoctorStatus(id, status);
+      const updatedDoctor = response.doctor || { 
+        ...doctors.find(d => d._id === id), 
+        status: (status.toLowerCase() === 'approved' || status.toLowerCase() === 'verified') ? 'Verified' : status 
+      };
+      setDoctors(doctors.map(d => d._id === id ? updatedDoctor : d));
     } catch (err) {
       alert('Error updating status: ' + err.message);
     }
@@ -37,7 +40,11 @@ export default function AdminDoctors() {
   const filteredDoctors = doctors.filter(doctor => {
     const matchesSearch = doctor.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           doctor.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterMode === 'all' ? true : doctor.status?.toLowerCase() === filterMode;
+    const matchesFilter = filterMode === 'all' 
+      ? true 
+      : filterMode === 'approved'
+        ? (doctor.status?.toLowerCase() === 'approved' || doctor.status?.toLowerCase() === 'verified')
+        : doctor.status?.toLowerCase() === filterMode;
     return matchesSearch && matchesFilter;
   });
 
@@ -105,10 +112,10 @@ export default function AdminDoctors() {
                   <td style={{ padding: '16px' }}>
                     <span style={{ 
                       padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700,
-                      backgroundColor: doc.status?.toLowerCase() === 'approved' ? 'rgba(5, 205, 153, 0.1)' : (doc.status?.toLowerCase() === 'pending' ? 'rgba(255, 166, 32, 0.1)' : 'rgba(244, 63, 94, 0.1)'),
-                      color: doc.status?.toLowerCase() === 'approved' ? '#05CD99' : (doc.status?.toLowerCase() === 'pending' ? '#FFA620' : '#F43F5E')
+                      backgroundColor: (doc.status?.toLowerCase() === 'approved' || doc.status?.toLowerCase() === 'verified') ? 'rgba(5, 205, 153, 0.1)' : (doc.status?.toLowerCase() === 'pending' ? 'rgba(255, 166, 32, 0.1)' : 'rgba(244, 63, 94, 0.1)'),
+                      color: (doc.status?.toLowerCase() === 'approved' || doc.status?.toLowerCase() === 'verified') ? '#05CD99' : (doc.status?.toLowerCase() === 'pending' ? '#FFA620' : '#F43F5E')
                     }}>
-                      {doc.status?.toUpperCase() || 'UNKNOWN'}
+                      {(doc.status?.toLowerCase() === 'approved' || doc.status?.toLowerCase() === 'verified') ? 'APPROVED' : (doc.status?.toUpperCase() || 'UNKNOWN')}
                     </span>
                   </td>
                   <td style={{ padding: '16px', textAlign: 'right' }}>
@@ -116,7 +123,7 @@ export default function AdminDoctors() {
                       <button style={{ padding: '6px', backgroundColor: '#f3f4f6', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#4b5563' }} title="View Details">
                         <Eye size={18} />
                       </button>
-                      {doc.status?.toLowerCase() !== 'approved' && (
+                      {(doc.status?.toLowerCase() !== 'approved' && doc.status?.toLowerCase() !== 'verified') && (
                         <button onClick={() => handleUpdateStatus(doc._id, 'Approved')} style={{ padding: '6px', backgroundColor: 'rgba(5, 205, 153, 0.1)', border: 'none', borderRadius: '8px', cursor: 'pointer', color: '#05CD99' }} title="Approve">
                           <CheckCircle size={18} />
                         </button>
