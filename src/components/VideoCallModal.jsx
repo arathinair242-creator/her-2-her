@@ -3,7 +3,9 @@ import { X, Mic, MicOff, Video as VideoIcon, VideoOff, PhoneOff, Settings, Maxim
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
 
-const SOCKET_URL = 'http://localhost:5001'; // Match server port
+const SOCKET_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://her-2-her.onrender.com' 
+  : (window.location.hostname === 'localhost' ? 'http://localhost:5001' : 'https://her-2-her.onrender.com');
 
 export default function VideoCallModal({ expert, user, onClose, appointmentId = 'default-room' }) {
   const [micOn, setMicOn] = useState(true);
@@ -32,6 +34,7 @@ export default function VideoCallModal({ expert, user, onClose, appointmentId = 
         setStream(userStream);
         if (myVideoRef.current) {
           myVideoRef.current.srcObject = userStream;
+          myVideoRef.current.play().catch(e => console.log('Video play error:', e));
         }
 
         socketRef.current = io(SOCKET_URL);
@@ -222,7 +225,19 @@ export default function VideoCallModal({ expert, user, onClose, appointmentId = 
               boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
               backgroundColor: '#1a1a2e'
             }}>
-              <video ref={myVideoRef} autoPlay muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} />
+              <video 
+                ref={(el) => {
+                  myVideoRef.current = el;
+                  if (el && stream && el.srcObject !== stream) {
+                    el.srcObject = stream;
+                    el.play().catch(e => console.log('Video play error:', e));
+                  }
+                }} 
+                autoPlay 
+                muted 
+                playsInline 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} 
+              />
               {!videoOn && (
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <VideoOff size={24} style={{ color: 'rgba(255,255,255,0.4)' }} />
