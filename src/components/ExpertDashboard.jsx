@@ -20,8 +20,7 @@ export default function ExpertDashboard() {
     setError(null);
     try {
       const data = await consultApi.getExpertSessions();
-      const valid = Array.isArray(data) ? data.filter(c => c.user) : [];
-      setAppointments(valid);
+      setAppointments(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error fetching expert appointments:", err);
       setError(err.message);
@@ -46,9 +45,35 @@ export default function ExpertDashboard() {
     setShowVideoCall(true);
   };
 
+  const counts = {
+    Total: appointments.length,
+    Pending: appointments.filter(a => a.status === 'Pending').length,
+    Confirmed: appointments.filter(a => a.status === 'Confirmed').length,
+    Completed: appointments.filter(a => a.status === 'Completed').length,
+  };
+
   return (
     <div className="dashboard-container" style={{ padding: '20px' }}>
       <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px', color: 'var(--text-dark)' }}>Patient Appointments</h2>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
+          <h4 style={{ margin: 0, color: 'var(--text-gray)', fontSize: '0.85rem', fontWeight: 600 }}>Total</h4>
+          <p style={{ margin: '8px 0 0', fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-dark)' }}>{counts.Total}</p>
+        </div>
+        <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
+          <h4 style={{ margin: 0, color: 'var(--text-gray)', fontSize: '0.85rem', fontWeight: 600 }}>Pending</h4>
+          <p style={{ margin: '8px 0 0', fontSize: '1.5rem', fontWeight: 800, color: '#f59e0b' }}>{counts.Pending}</p>
+        </div>
+        <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
+          <h4 style={{ margin: 0, color: 'var(--text-gray)', fontSize: '0.85rem', fontWeight: 600 }}>Confirmed</h4>
+          <p style={{ margin: '8px 0 0', fontSize: '1.5rem', fontWeight: 800, color: 'var(--teal-accent)' }}>{counts.Confirmed}</p>
+        </div>
+        <div className="glass-card" style={{ padding: '16px', textAlign: 'center' }}>
+          <h4 style={{ margin: 0, color: 'var(--text-gray)', fontSize: '0.85rem', fontWeight: 600 }}>Completed</h4>
+          <p style={{ margin: '8px 0 0', fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-pink)' }}>{counts.Completed}</p>
+        </div>
+      </div>
 
       {loading ? (
         <p>Loading appointments...</p>

@@ -47,10 +47,20 @@ exports.getMyConsultations = async (req, res) => {
 
 exports.getExpertConsultations = async (req, res) => {
   try {
-    console.log('[EXPERT SESSIONS] Fetching consultations for expert ID:', req.user.id);
-    const consultations = await Consultation.find({ expert: req.user.id })
+    const mongoose = require('mongoose');
+    console.log('[DEBUG EXPERT] Fetching consultations for expert ID:', req.user.id);
+    const expertObjId = new mongoose.Types.ObjectId(req.user.id);
+    const consultations = await Consultation.find({ expert: expertObjId })
       .populate('user', 'name email age profilePicture')
       .sort({ date: 1, time: 1 });
+    console.log(`[DEBUG EXPERT] DB returned ${consultations.length} items.`);
+    if (consultations.length > 0) {
+      console.log(`[DEBUG EXPERT] Sample item:`, JSON.stringify(consultations[0]));
+    } else {
+      // Log all consultations if no match
+      const all = await Consultation.find({}).limit(5);
+      console.log(`[DEBUG EXPERT] Random subset of all consultations:`, all.map(c => ({id: c._id, expertId: c.expert})));
+    }
     console.log(`[EXPERT SESSIONS] Found ${consultations.length} consultations for expert: ${req.user.id}`);
     res.json(consultations);
   } catch (err) {

@@ -212,8 +212,11 @@ export default function ExpertPortal() {
         localStorage.setItem('her2her_role', 'expert');
         localStorage.setItem('her2her_is_logged_in', 'true');
         setIsLoggedExpert(true);
-        setSuccessMsg('Successfully logged into your partner dashboard!');
-        setTimeout(() => window.location.reload(), 1500);
+        setSuccessMsg('Successfully logged into your dashboard!');
+        setTimeout(() => {
+          window.location.hash = '#dashboard';
+          window.location.reload();
+        }, 1500);
       }
     } catch (err) {
       alert('Login failed: ' + err.message);
@@ -245,7 +248,7 @@ export default function ExpertPortal() {
         setSuccessMsg('Successfully logged into your expert dashboard!');
         // Navigate to Expert Dashboard tab instead of reloading home
         setTimeout(() => {
-          window.location.hash = '#expert-dashboard';
+          window.location.hash = '#dashboard';
           window.location.reload();
         }, 1000);
       }

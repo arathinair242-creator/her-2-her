@@ -32,7 +32,11 @@ import './components/Pages.css';
 
 function App() {
   // Navigation active tab
-  const [activeTab, setActiveTab] = useState('Home');
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash === 'dashboard' || hash === 'expert-dashboard') return 'Dashboard';
+    return 'Home';
+  });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Modals visibility states
