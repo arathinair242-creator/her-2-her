@@ -47,9 +47,9 @@ export default function ExpertDashboard() {
 
   const counts = {
     Total: appointments.length,
-    Pending: appointments.filter(a => a.status === 'Pending').length,
-    Confirmed: appointments.filter(a => a.status === 'Confirmed').length,
-    Completed: appointments.filter(a => a.status === 'Completed').length,
+    Pending: appointments.filter(a => (a.status || '').toLowerCase() === 'pending').length,
+    Confirmed: appointments.filter(a => (a.status || '').toLowerCase() === 'confirmed').length,
+    Completed: appointments.filter(a => (a.status || '').toLowerCase() === 'completed').length,
   };
 
   return (
@@ -112,7 +112,7 @@ export default function ExpertDashboard() {
                     <span style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <Clock size={14} /> {app.time}
                     </span>
-                    <span className={`status-pill ${app.status.toLowerCase()}`}>{app.status}</span>
+                    <span className={`status-pill ${(app.status || 'pending').toLowerCase()}`}>{app.status || 'Pending'}</span>
                   </div>
                 </div>
               </div>
