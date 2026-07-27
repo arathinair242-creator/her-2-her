@@ -2,7 +2,9 @@ const Expert = require('../models/Expert');
 
 exports.getExperts = async (req, res) => {
   try {
-    const filter = req.query.status === 'all' ? {} : { status: 'Verified' };
+    const filter = req.query.status === 'all' 
+      ? {} 
+      : { status: { $regex: /^verified$/i } };
     const experts = await Expert.find(filter).select('-password');
     res.json(experts);
   } catch (err) {

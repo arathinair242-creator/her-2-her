@@ -127,7 +127,12 @@ exports.updateDoctorStatus = async (req, res) => {
        return res.status(400).json({ message: 'Invalid status' });
     }
 
-    const canonicalStatus = (status.toLowerCase() === 'approved' || status.toLowerCase() === 'verified') ? 'Verified' : status;
+    const sl = status.toLowerCase();
+    const canonicalStatus = sl === 'approved' || sl === 'verified' 
+      ? 'Verified' 
+      : sl === 'rejected' 
+        ? 'Rejected' 
+        : 'Pending';
     const doctor = await Expert.findByIdAndUpdate(id, { status: canonicalStatus }, { new: true });
     if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
     
