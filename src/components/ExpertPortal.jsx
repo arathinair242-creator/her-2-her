@@ -26,7 +26,9 @@ const decodeJwt = (token) => {
 export default function ExpertPortal() {
   const [activeFormTab, setActiveFormTab] = useState('register'); // register, login
   const [successMsg, setSuccessMsg] = useState('');
-  const [isLoggedExpert, setIsLoggedExpert] = useState(false);
+  const [isLoggedExpert, setIsLoggedExpert] = useState(
+    () => localStorage.getItem('her2her_role') === 'expert' && localStorage.getItem('her2her_is_logged_in') === 'true'
+  );
   const [expertAppointments, setExpertAppointments] = useState([]);
   const [isDataLoading, setIsDataLoading] = useState(false);
 
@@ -182,19 +184,20 @@ export default function ExpertPortal() {
     window.scrollTo(0, 0);
   };
 
+  const fetchAppointments = async () => {
+    setIsDataLoading(true);
+    try {
+      const data = await consultApi.getExpertSessions();
+      setExpertAppointments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to fetch appointments:", err);
+    } finally {
+      setIsDataLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isLoggedExpert) {
-      const fetchAppointments = async () => {
-        setIsDataLoading(true);
-        try {
-          const data = await consultApi.getExpertSessions();
-          setExpertAppointments(data);
-        } catch (err) {
-          console.error("Failed to fetch appointments:", err);
-        } finally {
-          setIsDataLoading(false);
-        }
-      };
       fetchAppointments();
     }
   }, [isLoggedExpert]);
@@ -288,13 +291,18 @@ export default function ExpertPortal() {
         <div className="glass-card" style={{ padding: '30px', marginBottom: '40px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Welcome to your Dashboard</h2>
-            <button className="btn-secondary" onClick={() => {
-              // FIX: Clear all session data on expert logout
-              localStorage.removeItem('her2her_token');
-              localStorage.removeItem('her2her_role');
-              localStorage.removeItem('her2her_is_logged_in');
-              setIsLoggedExpert(false);
-            }}>Logout</button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button className="btn-secondary" onClick={fetchAppointments} disabled={isDataLoading}
+                style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+                {isDataLoading ? 'Refreshing...' : '↻ Refresh'}
+              </button>
+              <button className="btn-secondary" onClick={() => {
+                localStorage.removeItem('her2her_token');
+                localStorage.removeItem('her2her_role');
+                localStorage.removeItem('her2her_is_logged_in');
+                setIsLoggedExpert(false);
+              }}>Logout</button>
+            </div>
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', marginBottom: '40px' }}>
@@ -307,8 +315,8 @@ export default function ExpertPortal() {
               <h3 style={{ fontSize: '2rem', color: 'var(--primary-pink)' }}>{expertAppointments.filter(a => a.type === 'Video').length}</h3>
             </div>
             <div className="glass-card" style={{ padding: '20px', textAlign: 'center' }}>
-              <p style={{ color: 'var(--text-light)', fontSize: '0.8rem', fontWeight: 600 }}>Pending Reviews</p>
-              <h3 style={{ fontSize: '2rem', color: '#f59e0b' }}>2</h3>
+              <p style={{ color: 'var(--text-light)', fontSize: '0.8rem', fontWeight: 600 }}>Pending</p>
+              <h3 style={{ fontSize: '2rem', color: '#f59e0b' }}>{expertAppointments.filter(a => a.status === 'Pending').length}</h3>
             </div>
           </div>
 
