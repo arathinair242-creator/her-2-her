@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, X, Check, Search, Eye, EyeOff } from 'lucide-react';
-import { expertApi } from '../api/apiClient';
+import { Plus, Edit2, Trash2, X, Check, Search, Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
+import { expertApi, adminApi } from '../api/apiClient';
 
 export default function AdminDoctorManagement() {
   const [experts, setExperts] = useState([]);
@@ -65,6 +65,16 @@ export default function AdminDoctorManagement() {
       } catch (err) {
         alert("Error deleting expert: " + err.message);
       }
+    }
+  };
+
+  const handleStatusUpdate = async (id, status) => {
+    try {
+      await adminApi.updateDoctorStatus(id, status);
+      // Update locally for instant UI feedback
+      setExperts(prev => prev.map(e => e._id === id ? { ...e, status } : e));
+    } catch (err) {
+      alert('Error updating status: ' + err.message);
     }
   };
 
@@ -171,7 +181,25 @@ export default function AdminDoctorManagement() {
                     </span>
                   </td>
                   <td style={{ padding: '16px' }}>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      {exp.status !== 'Verified' && (
+                        <button
+                          onClick={() => handleStatusUpdate(exp._id, 'Verified')}
+                          title="Approve"
+                          style={{ display: 'flex', alignItems: 'center', gap: '5px', border: 'none', background: '#ecfdf5', padding: '7px 12px', borderRadius: '8px', cursor: 'pointer', color: '#10b981', fontWeight: 700, fontSize: '0.8rem' }}
+                        >
+                          <CheckCircle size={14} /> Approve
+                        </button>
+                      )}
+                      {exp.status !== 'Rejected' && (
+                        <button
+                          onClick={() => handleStatusUpdate(exp._id, 'Rejected')}
+                          title="Reject"
+                          style={{ display: 'flex', alignItems: 'center', gap: '5px', border: 'none', background: '#fee2e2', padding: '7px 12px', borderRadius: '8px', cursor: 'pointer', color: '#ef4444', fontWeight: 700, fontSize: '0.8rem' }}
+                        >
+                          <XCircle size={14} /> Reject
+                        </button>
+                      )}
                       <button onClick={() => openModal(exp)} style={{ border: 'none', background: '#f1f5f9', padding: '8px', borderRadius: '8px', cursor: 'pointer', color: '#64748b' }}>
                         <Edit2 size={16} />
                       </button>
