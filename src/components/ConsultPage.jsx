@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, MessageSquare, Video, Search, ChevronRight, X } from 'lucide-react';
+import { Star, MessageSquare, Video, X, BadgeCheck, Users } from 'lucide-react';
 import { expertApi, consultApi } from '../api/apiClient';
 import VideoCallModal from './VideoCallModal';
 import BookingCheckoutModal from './BookingCheckoutModal';
@@ -190,17 +190,41 @@ export default function ConsultPage({ setChatOpen }) {
         </select>
       </div>
 
+      {/* Expert count pill */}
+      {!loading && (
+        <div className="consult-count-badge">
+          <Users size={15} />
+          <span>{filteredExperts.length} Verified Expert{filteredExperts.length !== 1 ? 's' : ''} Available</span>
+        </div>
+      )}
+
       {/* Experts Grid */}
       <div className="experts-grid">
         {loading ? (
-          <p style={{ textAlign: 'center', gridColumn: 'span 3', padding: '40px 0' }}>Loading experts...</p>
+          <div className="consult-loading-state">
+            <div className="consult-loading-spinner" />
+            <p>Finding verified experts for you...</p>
+          </div>
         ) : filteredExperts.length === 0 ? (
-          <p style={{ textAlign: 'center', color: 'var(--text-light)', gridColumn: 'span 3', padding: '40px 0' }}>
-            No experts found matching your search.
-          </p>
+          <div className="consult-empty-state">
+            <div className="consult-empty-icon">🔍</div>
+            <h3>No Verified Experts Found</h3>
+            <p>No admin-verified experts match your search criteria. Please try a different filter or check back soon as new experts get verified.</p>
+            {specialtyFilter !== 'All' && (
+              <button className="btn-modal-cancel" style={{ marginTop: '16px' }} onClick={() => setSpecialtyFilter('All')}>
+                Clear Filter
+              </button>
+            )}
+          </div>
         ) : (
           filteredExperts.map((exp) => (
             <div key={exp._id || exp.id} className="expert-card glass-card">
+              {/* Verified Badge */}
+              <div className="expert-verified-badge">
+                <BadgeCheck size={14} />
+                <span>Verified</span>
+              </div>
+
               <div className="expert-image-container">
                 <div className="expert-avatar-placeholder" style={{
                   backgroundImage: 'linear-gradient(135deg, var(--secondary-violet-light) 0%, var(--primary-pink-light) 100%)',
@@ -210,6 +234,7 @@ export default function ConsultPage({ setChatOpen }) {
                 </div>
                 <span className="availability-dot" />
               </div>
+
               <div className="expert-details">
                 <h4 className="expert-name">{exp.name}</h4>
                 <p className="expert-role">{exp.specialization}</p>
@@ -220,6 +245,12 @@ export default function ConsultPage({ setChatOpen }) {
                   <span className="rating-score">4.9</span>
                   <span className="rating-count">(Recently Joined)</span>
                 </div>
+
+                {exp.aboutMe && (
+                  <p className="expert-about" title={exp.aboutMe}>
+                    {exp.aboutMe.length > 80 ? exp.aboutMe.slice(0, 80) + '…' : exp.aboutMe}
+                  </p>
+                )}
 
                 <div className="expert-actions">
                   <button className="btn-chat" onClick={() => { setChatOpen(true); alert(`Opening direct chat with ${exp.name}...`); }}>
